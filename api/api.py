@@ -6,5 +6,4 @@ app.config["DEBUG"] = True
 @app.route('/', methods=["GET"])
 def home():
     return "Big Enjoy Customs API"
-
-app.run()
+app.run(host='0.0.0.0')
