@@ -78,8 +78,10 @@ def db_json_function(id = "4639995139"):
 
         cur = conn.cursor()
 
-        #print(json.dumps(data))
-        cur.callproc("add_game", [json.dumps(data),])
+        f = open("players.json", "r")
+        players_list = f.read()
+
+        cur.callproc("add_game", [json.dumps(data),players_list])
     
     except(Exception, pg.Error) as error:
         print(error)

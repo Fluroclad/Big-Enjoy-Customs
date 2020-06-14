@@ -1,0 +1,44 @@
+{
+    "players": [
+        {
+            "player_name": "A",
+            "role": "TOP"
+        },
+        {
+            "player_name": "B",
+            "role": "JUNGLE"
+        },
+        {
+            "player_name": "C",
+            "role": "MIDDLE"
+        },
+        {
+            "player_name": "D",
+            "role": "BOTTOM"
+        },
+        {
+            "player_name": "E",
+            "role": "SUPPORT"
+        },
+        {
+            "player_name": "F",
+            "role": "TOP"
+        },
+        {
+            "player_name": "G",
+            "role": "JUNGLE"
+        },
+        {
+            "player_name": "H",
+            "role": "MIDDLE"
+        },
+        {
+            "player_name": "I",
+            "role": "BOTTOM"
+        },
+        {
+            "player_name": "J",
+            "role": "SUPPORT"
+        }
+    ]
+}
