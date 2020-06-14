@@ -1,27 +1,96 @@
-import psycopg2
+import sys, urllib.request, json
+import psycopg2 as pg
+
+user = "postgres"
+password = "admin"
+host = "localhost"
+port = "5432"
+database = "big_enjoy_customs"
+token = ""
 
 # Test Database connection
+def connection():
+    try:
+        conn = pg.connect(  user = user,
+                            password = password,
+                            host = host,
+                            port = port,
+                            dbname = database)
 
-try:
-    connection = psycopg2.connect(  user = "postgres",
-                                    password = "admin",
-                                    host = "localhost",
-                                    port = "5432",
-                                    database = "postgres")
+        cur = conn.cursor()
 
-    c = connection.cursor()
+        print(conn.get_dsn_parameters(), "\n")
 
-    print(connection.get_dsn_parameters(), "\n")
+        cur.execute("SELECT version();")
+        record = cur.fetchone()
+        print("You are connected to - ", record, "\n")
 
-    c.execute("SELECT version();")
-    record = c.fetchone()
-    print("You are connected to - ", record, "\n")
+    except(Exception, pg.Error) as error:
+        print("Error while connecting to PostgreSQL", error)
 
-except(Exception, psycopg2.Error) as error:
-    print("Error while connecting to PostgreSQL", error)
+    finally:
+        if(conn):
+            cur.close()
+            conn.close()
+            print("PostgreSQL connection is closed")
 
-finally:
-    if(connection):
-        c.close()
-        connection.close()
-        print("PostgreSQL connection is closed")
+def db_function():
+    try:
+        conn = pg.connect(  user = user,
+                            password = password,
+                            host = host,
+                            port = port,
+                            dbname = database)
+
+        cur = conn.cursor()
+        
+        playerName = input ("Player Name: ")
+        topPref = input("Top (number 1-10 inclusive): ")
+        junglePref = input("Jungle (number 1-10 inclusive): ")
+        middlePref = input("Middle (number 1-10 inclusive): ")
+        bottomPref = input("Bottom (number 1-10 inclusive): ")
+        supportPref = input("Support (number 1-10 inclusive): ")
+        cur.callproc("add_player", [playerName,topPref,junglePref,middlePref,bottomPref,supportPref])
+
+    except(Exception, pg.Error) as error:
+        print(error)
+
+    finally:
+        if(conn):
+            cur.close()
+            conn.commit()
+            conn.close()
+            print("PostgreSQL connection is closed")
+
+def db_json_function(id = "4639995139"):
+    riotAPI = "https://euw1.api.riotgames.com/"
+    matchAPI = "/lol/match/v4/matches/" + str(id)
+
+    with urllib.request.urlopen(riotAPI + matchAPI + "?api_key=" + token) as url:
+        data = json.loads(url.read().decode())
+    
+    try:
+        conn = pg.connect(  user = user,
+                            password = password,
+                            host = host,
+                            port = port,
+                            dbname = database)
+
+        cur = conn.cursor()
+
+        #print(json.dumps(data))
+        cur.callproc("add_game", [json.dumps(data),])
+    
+    except(Exception, pg.Error) as error:
+        print(error)
+
+    finally:
+        if(conn):
+            cur.close()
+            conn.commit()
+            conn.close()
+            print("PostgreSQL connection is closed")
+    
+
+if __name__ == '__main__':
+    globals()[sys.argv[1]]()

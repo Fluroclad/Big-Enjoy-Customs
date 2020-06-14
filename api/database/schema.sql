@@ -22,6 +22,7 @@ CREATE TABLE player_ratings (
     middle      SMALLINT NOT NULL,
     bottom      SMALLINT NOT NULL,
     support     SMALLINT NOT NULL,
+    PRIMARY KEY (player_name),
     FOREIGN KEY (player_name) REFERENCES players (player_name)
 );
 
@@ -33,20 +34,26 @@ CREATE TABLE player_role_preferences (
     middle  SMALLINT NOT NULL,
     bottom  SMALLINT NOT NULL,
     support SMALLINT NOT NULL,
-    FOREIGN KEY (player_name) REFERENCES players (player_name)
+    PRIMARY KEY (player_name),
+    FOREIGN KEY (player_name) REFERENCES players (player_name),
+    CHECK ("top" BETWEEN 0 and 10),
+    CHECK (jungle BETWEEN 0 and 10),
+    CHECK (middle BETWEEN 0 and 10),
+    CHECK (bottom BETWEEN 0 and 10),
+    CHECK (support BETWEEN 0 and 10)
 );
 
 DROP TABLE IF EXISTS games CASCADE;
 CREATE TABLE games (
     riot_game_id BIGINT NOT NULL,
-    game_duration BIGINT NOT NULL,
+    game_duration INT NOT NULL,
     game_version VARCHAR(50) NOT NULL,
     winner game_side NOT NULL,
     first_tower game_side NOT NULL,
     first_inhibitor game_side NOT NULL,
-    first_rift_herald game_side NOT NULL,
     first_dragon game_side NOT NULL,
     first_baron game_side NOT NULL,
+    first_rift_herald game_side NOT NULL,
     PRIMARY KEY (riot_game_id)
 );
 
@@ -59,7 +66,7 @@ CREATE TABLE game_team_stats (
     dragon_kills INT NOT NULL,
     baron_kills INT NOT NULL,
     FOREIGN KEY (game_id) REFERENCES games (riot_game_id),
-    UNIQUE (game_id, side)
+    PRIMARY KEY (game_id, side)
 );
 
 DROP TABLE IF EXISTS game_bans CASCADE;
@@ -70,7 +77,7 @@ CREATE TABLE game_bans (
     pick_turn INT NOT NULL,
     CHECK (pick_turn BETWEEN 1 and 5),
     FOREIGN KEY (game_id) REFERENCES games (riot_game_id),
-    UNIQUE (game_id, side, pick_turn)
+    PRIMARY KEY (game_id, side, pick_turn)
 );
 
 
@@ -173,3 +180,80 @@ CREATE TABLE game_participants (
     UNIQUE (game_id, player_name), /* One player per game id */
     UNIQUE ("role", side) /* Ensures 1 role per side to make sure 10 players per game id */
 );
+
+/* FUNCTIONS */
+CREATE OR REPLACE FUNCTION add_player(  p_name varchar(16),
+                                        r_pref_top INT,
+                                        r_pref_jungle INT,
+                                        r_pref_middle INT,
+                                        r_pref_bottom INT,
+                                        r_pref_support INT)
+RETURNS VOID AS
+$$
+BEGIN
+    INSERT INTO players (player_name)
+    VALUES (p_name);
+
+    INSERT INTO player_role_preferences (player_name, "top", jungle, middle, bottom, support)
+    VALUES (p_name, r_pref_top, r_pref_jungle, r_pref_middle, r_pref_bottom, r_pref_support);
+END
+$$
+LANGUAGE 'plpgsql';
+
+/* Work out whether Blue or Red side got particular objectives */
+CREATE OR REPLACE FUNCTION side(riot JSON, field TEXT)
+RETURNS game_side AS $$
+DECLARE
+    array_field TEXT;
+BEGIN
+    array_field := '{teams,0,' || field || '}';
+    
+    IF field = 'win' THEN
+        IF (riot#>>'{teams,0,teamId}')::INT = 100 AND riot#>>array_field::TEXT[] = 'Win' THEN
+            RETURN 'BLUE'::game_side;
+        ELSE
+            RETURN 'RED'::game_side;
+        END IF;
+    END IF;
+
+    IF (riot#>>'{teams,0,teamId}')::INT = 100 AND (riot#>>array_field::TEXT[])::BOOLEAN = TRUE THEN
+        RETURN 'BLUE'::game_side;
+    ELSE
+        RETURN 'RED'::game_side;
+    END IF;
+END;
+$$
+LANGUAGE 'plpgsql';
+
+/* Riot Game parser to add to database */
+CREATE OR REPLACE FUNCTION add_game(riot JSON)
+RETURNS VOID AS $$
+DECLARE
+    m_winner    game_side;
+    m_blood     game_side;
+    m_tower     game_side;
+    m_inhibitor game_side;
+    m_dragon    game_side;
+    m_baron     game_side;
+    m_herald    game_side;
+BEGIN
+    /* Work out side first objectives */
+    SELECT side(riot, 'win') INTO m_winner;
+    SELECT side(riot, 'firstTower') INTO m_tower;
+    SELECT side(riot, 'firstInhibitor') INTO m_inhibitor;
+    SELECT side(riot, 'firstDragon') INTO m_dragon;
+    SELECT side(riot, 'firstBaron') INTO m_baron;
+    SELECT side(riot, 'firstRiftHerald') INTO m_herald;
+
+    /* Insert initial game */
+    INSERT INTO games (riot_game_id, game_duration, game_version, winner, first_tower, first_inhibitor, first_dragon, first_baron, first_rift_herald)
+    VALUES ((riot->>'gameId')::BIGINT, (riot->>'gameDuration')::INT, riot->>'gameVersion', m_winner, m_tower, m_inhibitor, m_dragon, m_baron, m_herald);
+
+    /* Insert game team stats */
+
+    /* Insert game bans */
+
+    /* Insert game participants */
+END;
+$$
+LANGUAGE 'plpgsql';
