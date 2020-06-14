@@ -65,6 +65,7 @@ CREATE TABLE game_team_stats (
     inhibitor_kills INT NOT NULL,
     dragon_kills INT NOT NULL,
     baron_kills INT NOT NULL,
+    rift_herald_kills INT NOT NULL,
     FOREIGN KEY (game_id) REFERENCES games (riot_game_id),
     PRIMARY KEY (game_id, side)
 );
@@ -225,6 +226,61 @@ END;
 $$
 LANGUAGE 'plpgsql';
 
+/* Return blue or red game_side */
+CREATE OR REPLACE FUNCTION side(team_id INT)
+RETURNS game_side AS $$
+DECLARE
+BEGIN
+    IF team_id = 100 THEN
+        RETURN 'BLUE'::game_side;
+    ELSE
+        RETURN 'RED'::game_side;
+    END IF;
+END;
+$$
+LANGUAGE 'plpgsql';
+
+/* Add game team stats */
+CREATE OR REPLACE FUNCTION add_game_team_stats(riot json)
+RETURNS VOID AS $$
+DECLARE
+    l_counter INT := 0;
+    m_field TEXT;
+    m_team TEXT;
+    m_side game_side;
+    m_tower TEXT;
+    m_inhibitor TEXT;
+    m_dragon TEXT;
+    m_baron TEXT;
+    m_herald TEXT;
+BEGIN
+    LOOP
+        EXIT WHEN l_counter = 2;
+        
+        m_field := '{teams,' || l_counter::TEXT || ',';
+        m_tower     := m_field || 'towerKills}';
+        m_inhibitor := m_field || 'inhibitorKills}';
+        m_dragon    := m_field || 'dragonKills}';
+        m_baron     := m_field || 'baronKills}';
+        m_herald    := m_field || 'riftHeraldKills}';
+        m_team      := m_field || 'teamId}';
+
+        SELECT side((riot#>>m_team::TEXT[])::INT) INTO m_side;
+
+        INSERT INTO game_team_stats (game_id, side, tower_kills, inhibitor_kills, dragon_kills, baron_kills, rift_herald_kills)
+        VALUES ((riot->>'gameId')::BIGINT,
+                m_side,
+                (riot#>>m_tower::TEXT[])::INT,
+                (riot#>>m_inhibitor::TEXT[])::INT,
+                (riot#>>m_dragon::TEXT[])::INT,
+                (riot#>>m_baron::TEXT[])::INT,
+                (riot#>>m_herald::TEXT[])::INT);
+        l_counter := l_counter + 1;
+    END LOOP;
+END
+$$
+LANGUAGE 'plpgsql';
+
 /* Riot Game parser to add to database */
 CREATE OR REPLACE FUNCTION add_game(riot JSON)
 RETURNS VOID AS $$
@@ -250,6 +306,7 @@ BEGIN
     VALUES ((riot->>'gameId')::BIGINT, (riot->>'gameDuration')::INT, riot->>'gameVersion', m_winner, m_tower, m_inhibitor, m_dragon, m_baron, m_herald);
 
     /* Insert game team stats */
+    EXECUTE add_game_team_stats(riot);
 
     /* Insert game bans */
 
