@@ -66,7 +66,7 @@ CREATE TABLE game_team_stats (
     dragon_kills INT NOT NULL,
     baron_kills INT NOT NULL,
     rift_herald_kills INT NOT NULL,
-    FOREIGN KEY (game_id) REFERENCES games (riot_game_id) ON UPDATE CASCADE,
+    FOREIGN KEY (game_id) REFERENCES games (riot_game_id),
     PRIMARY KEY (game_id, side)
 );
 
@@ -77,7 +77,7 @@ CREATE TABLE game_bans (
     champion_id INT NOT NULL,
     pick_turn INT NOT NULL,
     CHECK (pick_turn BETWEEN 1 and 5),
-    FOREIGN KEY (game_id) REFERENCES games (riot_game_id) ON UPDATE CASCADE,
+    FOREIGN KEY (game_id) REFERENCES games (riot_game_id),
     PRIMARY KEY (game_id, side, pick_turn)
 );
 
@@ -178,6 +178,7 @@ CREATE TABLE game_participants (
     stat_perk1 INT NOT NULL,
     stat_perk2 INT NOT NULL,
     FOREIGN KEY (game_id) REFERENCES games (riot_game_id),
+    FOREIGN KEY (player_name) REFERENCES players (player_name) ON UPDATE CASCADE,
     UNIQUE (game_id, player_name), /* One player per game id */
     UNIQUE ("role", side) /* Ensures 1 role per side to make sure 10 players per game id */
 );
