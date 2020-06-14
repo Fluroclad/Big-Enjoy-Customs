@@ -23,7 +23,7 @@ CREATE TABLE player_ratings (
     bottom      SMALLINT NOT NULL,
     support     SMALLINT NOT NULL,
     PRIMARY KEY (player_name),
-    FOREIGN KEY (player_name) REFERENCES players (player_name)
+    FOREIGN KEY (player_name) REFERENCES players (player_name) ON UPDATE CASCADE
 );
 
 DROP TABLE IF EXISTS player_role_preferences CASCADE;
@@ -35,7 +35,7 @@ CREATE TABLE player_role_preferences (
     bottom  SMALLINT NOT NULL,
     support SMALLINT NOT NULL,
     PRIMARY KEY (player_name),
-    FOREIGN KEY (player_name) REFERENCES players (player_name),
+    FOREIGN KEY (player_name) REFERENCES players (player_name) ON UPDATE CASCADE,
     CHECK ("top" BETWEEN 0 and 10),
     CHECK (jungle BETWEEN 0 and 10),
     CHECK (middle BETWEEN 0 and 10),
@@ -66,7 +66,7 @@ CREATE TABLE game_team_stats (
     dragon_kills INT NOT NULL,
     baron_kills INT NOT NULL,
     rift_herald_kills INT NOT NULL,
-    FOREIGN KEY (game_id) REFERENCES games (riot_game_id),
+    FOREIGN KEY (game_id) REFERENCES games (riot_game_id) ON UPDATE CASCADE,
     PRIMARY KEY (game_id, side)
 );
 
@@ -77,7 +77,7 @@ CREATE TABLE game_bans (
     champion_id INT NOT NULL,
     pick_turn INT NOT NULL,
     CHECK (pick_turn BETWEEN 1 and 5),
-    FOREIGN KEY (game_id) REFERENCES games (riot_game_id),
+    FOREIGN KEY (game_id) REFERENCES games (riot_game_id) ON UPDATE CASCADE,
     PRIMARY KEY (game_id, side, pick_turn)
 );
 
@@ -229,7 +229,6 @@ LANGUAGE 'plpgsql';
 /* Return blue or red game_side */
 CREATE OR REPLACE FUNCTION side(team_id INT)
 RETURNS game_side AS $$
-DECLARE
 BEGIN
     IF team_id = 100 THEN
         RETURN 'BLUE'::game_side;
@@ -241,7 +240,7 @@ $$
 LANGUAGE 'plpgsql';
 
 /* Add game team stats */
-CREATE OR REPLACE FUNCTION add_game_team_stats(riot json)
+CREATE OR REPLACE FUNCTION add_game_team_stats(riot JSON)
 RETURNS VOID AS $$
 DECLARE
     l_counter INT := 0;
@@ -265,6 +264,7 @@ BEGIN
         m_herald    := m_field || 'riftHeraldKills}';
         m_team      := m_field || 'teamId}';
 
+        /* get team side */
         SELECT side((riot#>>m_team::TEXT[])::INT) INTO m_side;
 
         INSERT INTO game_team_stats (game_id, side, tower_kills, inhibitor_kills, dragon_kills, baron_kills, rift_herald_kills)
@@ -275,9 +275,92 @@ BEGIN
                 (riot#>>m_dragon::TEXT[])::INT,
                 (riot#>>m_baron::TEXT[])::INT,
                 (riot#>>m_herald::TEXT[])::INT);
+        
+
         l_counter := l_counter + 1;
     END LOOP;
 END
+$$
+LANGUAGE 'plpgsql';
+
+/* Add game bans */
+CREATE OR REPLACE FUNCTION add_game_bans(riot JSON)
+RETURNS void AS $$
+DECLARE
+    l_team_counter INT := 0;
+    l_ban_counter INT := 0;
+    m_field TEXT;
+    m_team TEXT;
+    m_side game_side;
+    m_ban TEXT;
+    m_champ TEXT;
+    m_pick TEXT;
+BEGIN
+    LOOP 
+        EXIT WHEN l_team_counter = 2;
+
+        m_field := '{teams,' || l_team_counter::TEXT || ',';
+        m_team  := m_field || 'teamId}';
+        SELECT side((riot#>>m_team::TEXT[])::INT) INTO m_side;
+        
+        /* Reset counter for second team */
+        l_ban_counter := 0;
+
+        /* Banned champs loop */
+        LOOP
+            EXIT WHEN l_ban_counter = 5;
+            m_ban   := m_field || 'bans,' || l_ban_counter || ',';
+            m_champ := m_ban || 'championId}';
+            m_pick  := m_ban || 'pickTurn}';
+
+
+            /* Cause team 2 has pickorder 6 instead of 5 account for this and fix it */
+            IF (riot#>>m_pick::TEXT[])::INT = 5 OR (riot#>>m_pick::TEXT[])::INT = 6 THEN
+                INSERT INTO game_bans (game_id, side, champion_id, pick_turn)
+                VALUES ((riot->>'gameId')::BIGINT,
+                        m_side,
+                        (riot#>>m_champ::TEXT[])::INT,
+                        5);
+            ELSE
+                INSERT INTO game_bans (game_id, side, champion_id, pick_turn)
+                VALUES ((riot->>'gameId')::BIGINT,
+                        m_side,
+                        (riot#>>m_champ::TEXT[])::INT,
+                        (riot#>>m_pick::TEXT[])::INT);
+            END IF;
+            
+            
+            l_ban_counter := l_ban_counter + 1;
+        END LOOP;
+
+        l_team_counter := l_team_counter + 1;
+    END LOOP;
+END;
+$$
+LANGUAGE 'plpgsql';
+
+/* Add game participant */
+CREATE OR REPLACE FUNCTION add_game_participants(riot JSON, players TEXT[10])
+RETURNS VOID AS $$
+DECLARE
+    l_player_counter INT := 0;
+    m_field TEXT;
+    m_team TEXT;
+    m_side game_side;
+BEGIN
+    LOOP
+        EXIT WHEN l_player_counter = 10;
+        
+        m_field := '{teams,' || l_team_counter::TEXT || ',';
+        m_team  := m_field || 'teamId}';
+        SELECT side((riot#>>m_team::TEXT[])::INT) INTO m_side;
+
+            
+
+
+        l_player_counter := l_player_counter + 1;
+    END LOOP;
+END;
 $$
 LANGUAGE 'plpgsql';
 
@@ -309,6 +392,7 @@ BEGIN
     EXECUTE add_game_team_stats(riot);
 
     /* Insert game bans */
+    EXECUTE add_game_bans(riot);
 
     /* Insert game participants */
 END;
