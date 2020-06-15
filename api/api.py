@@ -6,22 +6,6 @@ import os
 import psycopg2 as pg
 from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
 
-def connect(name):
-    if name:
-        connection = pg.connect(user = os.environ.get('POSTGRES_USER'),
-                                password = os.environ.get('POSTGRES_PASSWORD'),
-                                host = os.environ.get('POSTGRES_HOST'),
-                                port = os.environ.get('POSTGRES_PORT'),
-                                dbname = name)
-    else:
-        connection = pg.connect(user = os.environ.get('POSTGRES_USER'),
-                                password = os.environ.get('POSTGRES_PASSWORD'),
-                                host = os.environ.get('POSTGRES_HOST'),
-                                port = os.environ.get('POSTGRES_PORT'),
-                                )
-
-    return connection
-
 app = flask.Flask(__name__)
 app.config["DEBUG"] = True
 
