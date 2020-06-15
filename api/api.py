@@ -1,6 +1,10 @@
 import flask
 from flask import request
 import database
+import sys
+import os
+import psycopg2 as pg
+from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
 
 app = flask.Flask(__name__)
 app.config["DEBUG"] = True
@@ -24,7 +28,7 @@ def getPlayer(name):
 @app.route("/player/add", methods=["POST"])
 def addPlayer():
     json_data = request.get_json()
-
+    
     result = database.addPlayer(json_data)
     
     if result == True:
@@ -43,4 +47,4 @@ def addMatch():
     else:
         return flask.Response(status=400)
 
-app.run(host='0.0.0.0', port=81)
+app.run(host='0.0.0.0')

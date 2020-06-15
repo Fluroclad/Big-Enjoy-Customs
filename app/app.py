@@ -3,9 +3,6 @@ from flask import render_template
 from flask import request
 import requests
 
-# TEMP
-import env_variables
-
 app = flask.Flask(__name__)
 app.config["DEBUG"] = True
 
@@ -15,7 +12,7 @@ def home():
 
 @app.route("/player/<name>", methods=["GET"])
 def getPlayer(name):
-    with urllib.request.urlopen(env_variables.apiURL + "/player/"+name) as url:
+    with urllib.request.urlopen("http://api:5000/player/"+name) as url:
         data = json.loads(url.read().decode())
     
     return data
@@ -44,7 +41,7 @@ def addPlayer():
         json_data["ratings"]["bottom"]  = 1400
         json_data["ratings"]["support"] = 1500
 
-        requests.post(env_variables.apiURL + "/player/add", json = json_data)
+        requests.post("http://api:5000/player/add", json = json_data)
         return render_template("test-json.html", data = json_data)
 
 @app.route("/add-match", methods=["GET","POST"])
@@ -68,7 +65,7 @@ def addMatch():
 
         json_data["players"] = players
 
-        requests.post(env_variables.apiURL + "/match/add", json = json_data)
+        requests.post("http://api:5000/match/add", json = json_data)
         return render_template("test-json.html", data = json_data)
 
-app.run(host="0.0.0.0", port=80)
+app.run(host="0.0.0.0")

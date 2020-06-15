@@ -2,24 +2,22 @@ import sys, json
 import psycopg2 as pg
 from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
 import psycopg2.extras
+import os
 
 import riotapi
 
-# TEMP
-import env_variables
-
 def connect(name):
     if name:
-        connection = pg.connect(user = env_variables.DB.user,
-                                password = env_variables.DB.password,
-                                host = env_variables.DB.host,
-                                port = env_variables.DB.port,
+        connection = pg.connect(user = os.environ.get('POSTGRES_USER'),
+                                password = os.environ.get('POSTGRES_PASSWORD'),
+                                host = os.environ.get('POSTGRES_HOST'),
+                                port = os.environ.get('POSTGRES_PORT'),
                                 dbname = name)
     else:
-        connection = pg.connect(user = env_variables.DB.user,
-                                password = env_variables.DB.password,
-                                host = env_variables.DB.host,
-                                port = env_variables.DB.port,
+        connection = pg.connect(user = os.environ.get('POSTGRES_USER'),
+                                password = os.environ.get('POSTGRES_PASSWORD'),
+                                host = os.environ.get('POSTGRES_HOST'),
+                                port = os.environ.get('POSTGRES_PORT'),
                                 )
 
     return connection
@@ -33,24 +31,24 @@ def install(schema = "database/schema.sql"):
         cur = conn.cursor()
         
         # Check if database already exists
-        cur.execute("SELECT 1 FROM pg_catalog.pg_database WHERE datname = '" + env_variables.DB.name + "';")
+        cur.execute("SELECT 1 FROM pg_catalog.pg_database WHERE datname = '" + os.environ.get('POSTGRES_DB') + "';")
         exists = cur.fetchone()
         if exists:
             result = input ("Delete database and recreate (Y/N)? ")
 
             if result == "Y" or result == "y":
-                print("Dropping " + env_variables.DB.name)
-                cur.execute("DROP DATABASE IF EXISTS " + env_variables.DB.name + ";")
-                print("Creating " + env_variables.DB.name)
-                cur.execute("CREATE DATABASE " + env_variables.DB.name + ";")
+                print("Dropping " + os.environ.get('POSTGRES_DB'))
+                cur.execute("DROP DATABASE IF EXISTS " + os.environ.get('POSTGRES_DB') + ";")
+                print("Creating " + os.environ.get('POSTGRES_DB'))
+                cur.execute("CREATE DATABASE " + os.environ.get('POSTGRES_DB') + ";")
 
             else:
                 # exit out of function
                 print("Doing nothing")
                 return 0
         else:
-            print("Creating " + env_variables.DB.name)
-            cur.execute("CREATE DATABASE " + env_variables.DB.name + ";")
+            print("Creating " + os.environ.get('POSTGRES_DB'))
+            cur.execute("CREATE DATABASE " + os.environ.get('POSTGRES_DB') + ";")
 
     except Exception as e:
         raise e
@@ -65,7 +63,7 @@ def install(schema = "database/schema.sql"):
 
     try:
         # Connect to database server
-        conn = connect(env_variables.DB.name)
+        conn = connect(os.environ.get('POSTGRES_DB'))
  
         with conn.cursor() as curs:
             print("Running sql schema")
@@ -81,7 +79,7 @@ def install(schema = "database/schema.sql"):
 
 def getPlayer(player_name):
     try:
-        conn = connect(env_variables.DB.name)
+        conn = connect(os.environ.get('POSTGRES_DB'))
         cur = conn.cursor(cursor_factory=pg.extras.DictCursor)
         cur.callproc("get_player",[player_name,])
         result = cur.fetchone()
@@ -117,7 +115,7 @@ def getPlayer(player_name):
 
 def addPlayer(player_data):
     try:
-        conn = connect(env_variables.DB.name)
+        conn = connect(os.environ.get('POSTGRES_DB'))
         cur = conn.cursor()
 
         player_data["riot_account_id"] = riotapi.getAccountID(player_data["summoner_name"])
@@ -136,7 +134,7 @@ def addPlayer(player_data):
 
 def addMatch(match_data):
     try:
-        conn = connect(env_variables.DB.name)
+        conn = connect(os.environ.get('POSTGRES_DB'))
         cur = conn.cursor()
 
         # Request match data from Riot API
