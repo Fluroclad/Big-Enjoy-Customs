@@ -11,7 +11,15 @@ def home():
 
 @app.route("/player/<name>", methods=["GET"])
 def getPlayer(name):
-    return "Player name is: " + name
+    result = database.getPlayer(name)
+
+    if bool(result):
+        response = app.response_class(response=result,
+                                  status=200,
+                                  mimetype='application/json')
+        return response
+    else:
+        return flask.Response(status=400)
 
 @app.route("/player/add", methods=["POST"])
 def addPlayer():
@@ -20,7 +28,7 @@ def addPlayer():
     result = database.addPlayer(json_data)
     
     if result == True:
-        return flask.Response(status=201)
+        return flask.Response(status=200)
     else:
         return flask.Response(status=400)
 
@@ -31,7 +39,7 @@ def addMatch():
     result = database.addMatch(json_data)
     
     if result == True:
-        return flask.Response(status=201)
+        return flask.Response(status=200)
     else:
         return flask.Response(status=400)
 

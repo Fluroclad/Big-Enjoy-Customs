@@ -184,6 +184,43 @@ CREATE TABLE game_participants (
 );
 
 /* FUNCTIONS */
+CREATE OR REPLACE FUNCTION get_player(player TEXT)
+RETURNS TABLE (player_name VARCHAR,
+                pref_top SMALLINT,
+                pref_jungle SMALLINT,
+                pref_middle SMALLINT,
+                pref_bottom SMALLINT,
+                pref_support SMALLINT,
+                rating_global SMALLINT,
+                rating_top SMALLINT,
+                rating_jungle SMALLINT,
+                rating_middle SMALLINT,
+                rating_bottom SMALLINT,
+                rating_support SMALLINT) AS
+$$
+BEGIN
+    RETURN QUERY
+    SELECT  players.player_name,
+            player_role_preferences.top,
+            player_role_preferences.jungle,
+            player_role_preferences.middle,
+            player_role_preferences.bottom,
+            player_role_preferences.support,
+            player_ratings.global,
+            player_ratings.top,
+            player_ratings.jungle,
+            player_ratings.middle,
+            player_ratings.bottom,
+            player_ratings.support
+    FROM players
+    INNER JOIN player_role_preferences ON players.player_name=player_role_preferences.player_name
+    INNER JOIN player_ratings ON players.player_name=player_ratings.player_name
+    WHERE players.player_name = player;
+END
+$$
+LANGUAGE 'plpgsql';
+
+
 CREATE OR REPLACE FUNCTION add_player(player JSON)
 RETURNS VOID AS
 $$
@@ -198,6 +235,15 @@ BEGIN
             (player#>>'{preferences,middle}'::TEXT[])::INT,
             (player#>>'{preferences,bottom}'::TEXT[])::INT,
             (player#>>'{preferences,support}'::TEXT[])::INT);
+    
+    INSERT INTO player_ratings (player_name, "global", "top", jungle, middle, bottom, support)
+    VALUES ((player->>'player_name')::TEXT,
+            (player#>>'{ratings,global}'::TEXT[])::INT,
+            (player#>>'{ratings,top}'::TEXT[])::INT,
+            (player#>>'{ratings,jungle}'::TEXT[])::INT,
+            (player#>>'{ratings,middle}'::TEXT[])::INT,
+            (player#>>'{ratings,bottom}'::TEXT[])::INT,
+            (player#>>'{ratings,support}'::TEXT[])::INT);
 END
 $$
 LANGUAGE 'plpgsql';

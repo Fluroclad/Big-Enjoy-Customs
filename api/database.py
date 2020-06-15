@@ -78,6 +78,42 @@ def install(schema = "database/schema.sql"):
 
     return 0
 
+def getPlayer(player_name):
+    try:
+        conn = connect(env_variables.DB.name)
+        cur = conn.cursor()
+        cur.callproc("get_player",[player_name,])
+        
+        result = cur.fetchall()
+        json_data = {}
+        json_data["player_name"] = result[0][0]
+
+        json_data["preferences"] = {}
+        json_data["preferences"]["top"] = result[0][1]
+        json_data["preferences"]["jungle"] = result[0][2]
+        json_data["preferences"]["middle"] = result[0][3]
+        json_data["preferences"]["bottom"] = result[0][4]
+        json_data["preferences"]["support"] = result[0][5]
+
+        json_data["ratings"] = {}
+        json_data["ratings"]["global"]  = result[0][6]
+        json_data["ratings"]["top"]     = result[0][7]
+        json_data["ratings"]["jungle"]  = result[0][8]
+        json_data["ratings"]["middle"]  = result[0][9]
+        json_data["ratings"]["bottom"]  = result[0][10]
+        json_data["ratings"]["support"] = result[0][11]
+
+        return json.dumps(json_data)
+    except Exception as e:
+        print(e)
+        conn.rollback()
+        return False
+    finally:
+        if (conn):
+            cur.close()
+            conn.commit()
+            conn.close()
+
 def addPlayer(player_data):
     try:
         conn = connect(env_variables.DB.name)
