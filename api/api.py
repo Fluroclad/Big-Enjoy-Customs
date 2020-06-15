@@ -14,10 +14,10 @@ def connect(name):
                                 port = os.environ.get('POSTGRES_PORT'),
                                 dbname = name)
     else:
-        connection = pg.connect(user = env_variables.DB.user,
-                                password = env_variables.DB.password,
-                                host = env_variables.DB.host,
-                                port = env_variables.DB.port,
+        connection = pg.connect(user = os.environ.get('POSTGRES_USER'),
+                                password = os.environ.get('POSTGRES_PASSWORD'),
+                                host = os.environ.get('POSTGRES_HOST'),
+                                port = os.environ.get('POSTGRES_PORT'),
                                 )
 
     return connection
@@ -44,7 +44,7 @@ def getPlayer(name):
 @app.route("/player/add", methods=["POST"])
 def addPlayer():
     json_data = request.get_json()
-
+    
     result = database.addPlayer(json_data)
     
     if result == True:

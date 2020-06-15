@@ -9,6 +9,10 @@ services:
         environment:
             - POSTGRES_HOST=database
             - POSTGRES_PORT=5432
+    app:
+        build: app
+        ports:
+            - "5001:5000"
     database:
         build: database
         ports:
