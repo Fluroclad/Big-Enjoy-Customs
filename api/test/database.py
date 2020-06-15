@@ -93,6 +93,46 @@ def db_json_function(id = "4639995139"):
             conn.close()
             print("PostgreSQL connection is closed")
     
+def populateDB():
+    try:
+        conn = pg.connect(  user = user,
+                            password = password,
+                            host = host,
+                            port = port,
+                            dbname = database)
+
+        cur = conn.cursor()
+
+        print("Starting to populate database")
+        
+        print("Start players")
+        players_list = json.load(open("players.json"))
+
+        for player in players_list["players"]:
+            cur.callproc("add_player", [json.dumps(player)])
+        
+        print("End players")
+
+        print("Start matches")
+        match = json.load(open("match.json"))
+        match_players = json.load(open("match_players.json"))
+        
+        cur.callproc("add_game", [json.dumps(match),json.dumps(match_players)])
+        
+        print("End matches")
+
+        print("Finished populating database")
+    except Exception as e:
+        print(e)
+        conn.rollback()
+    finally:
+        if(conn):
+            cur.close()
+            conn.commit()
+            conn.close()
+            print("PostgreSQL connection is closed")
+
+
 
 if __name__ == '__main__':
     globals()[sys.argv[1]]()

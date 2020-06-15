@@ -1,0 +1,44 @@
+{
+    "players": [
+        {
+            "player_name": "Drezzak",
+            "role": "BOTTOM"
+        },
+        {
+            "player_name": "Fluroclad",
+            "role": "SUPPORT"
+        },
+        {
+            "player_name": "Lightcat",
+            "role": "TOP"
+        },
+        {
+            "player_name": "Potshot",
+            "role": "MIDDLE"
+        },
+        {
+            "player_name": "World Champ",
+            "role": "JUNGLE"
+        },
+        {
+            "player_name": "NoodIes",
+            "role": "SUPPORT"
+        },
+        {
+            "player_name": "Flaadym",
+            "role": "MIDDLE"
+        },
+        {
+            "player_name": "evilily",
+            "role": "BOTTOM"
+        },
+        {
+            "player_name": "Taxman Rengar",
+            "role": "TOP"
+        },
+        {
+            "player_name": "Atila d hun",
+            "role": "JUNGLE"
+        }
+    ]
+}

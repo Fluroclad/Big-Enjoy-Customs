@@ -1,44 +1,184 @@
 {
     "players": [
         {
-            "player_name": "A",
-            "role": "TOP"
+            "player_name": "Drezzak",
+            "preferences": {
+                "top": 7,
+                "jungle": 2,
+                "middle": 0,
+                "bottom": 9,
+                "support": 10
+            },
+            "ratings": {
+                "global": 1500,
+                "top": 1700,
+                "jungle": 2000,
+                "middle": 1200,
+                "bottom": 3000,
+                "support": 1356
+            }
         },
         {
-            "player_name": "B",
-            "role": "JUNGLE"
+            "player_name": "Fluroclad",
+            "preferences": {
+                "top": 0,
+                "jungle": 10,
+                "middle": 0,
+                "bottom": 7,
+                "support": 10
+            },
+            "ratings": {
+                "global": 1500,
+                "top": 600,
+                "jungle": 700,
+                "middle": 900,
+                "bottom": 1000,
+                "support": 2000
+            }
         },
         {
-            "player_name": "C",
-            "role": "MIDDLE"
+            "player_name": "Lightcat",
+            "preferences": {
+                "top": 4,
+                "jungle": 1,
+                "middle": 4,
+                "bottom": 3,
+                "support": 2
+            },
+            "ratings": {
+                "global": 1500,
+                "top": 9000,
+                "jungle": 700,
+                "middle": 900,
+                "bottom": 1000,
+                "support": 2000
+            }
         },
         {
-            "player_name": "D",
-            "role": "BOTTOM"
+            "player_name": "Potshot",
+            "preferences": {
+                "top": 8,
+                "jungle": 7,
+                "middle": 6,
+                "bottom": 7,
+                "support": 10
+            },
+            "ratings": {
+                "global": 1500,
+                "top": 2600,
+                "jungle": 700,
+                "middle": 2600,
+                "bottom": 1000,
+                "support": 2000
+            }
         },
         {
-            "player_name": "E",
-            "role": "SUPPORT"
+            "player_name": "World Champ",
+            "preferences": {
+                "top": 7,
+                "jungle": 10,
+                "middle": 3,
+                "bottom": 7,
+                "support": 10
+            },
+            "ratings": {
+                "global": 1500,
+                "top": 2300,
+                "jungle": 700,
+                "middle": 2300,
+                "bottom": 1000,
+                "support": 2000
+            }
         },
         {
-            "player_name": "F",
-            "role": "TOP"
+            "player_name": "NoodIes",
+            "preferences": {
+                "top": 4,
+                "jungle": 10,
+                "middle": 7,
+                "bottom": 8,
+                "support": 1
+            },
+            "ratings": {
+                "global": 300,
+                "top": 200,
+                "jungle": 3600,
+                "middle": 2000,
+                "bottom": 1200,
+                "support": 1520
+            }
         },
         {
-            "player_name": "G",
-            "role": "JUNGLE"
+            "player_name": "Flaadym",
+            "preferences": {
+                "top": 0,
+                "jungle": 10,
+                "middle": 0,
+                "bottom": 0,
+                "support": 10
+            },
+            "ratings" : {
+                "global": 1500,
+                "top": 3600,
+                "jungle": 300,
+                "middle": 900,
+                "bottom": 300,
+                "support": 2000
+            }
         },
         {
-            "player_name": "H",
-            "role": "MIDDLE"
+            "player_name": "evilily",
+            "preferences": {
+                "top": 0,
+                "jungle": 10,
+                "middle": 0,
+                "bottom": 7,
+                "support": 10
+            },
+            "ratings" : {
+                "global": 300,
+                "top": 900,
+                "jungle": 2000,
+                "middle": 900,
+                "bottom": 1000,
+                "support": 600
+            }
         },
         {
-            "player_name": "I",
-            "role": "BOTTOM"
+            "player_name": "Taxman Rengar",
+            "preferences": {
+                "top": 10,
+                "jungle": 10,
+                "middle": 3,
+                "bottom": 7,
+                "support": 2
+            },
+            "ratings": {
+                "global": 900,
+                "top": 600,
+                "jungle": 700,
+                "middle": 900,
+                "bottom": 1000,
+                "support": 2000
+            }
         },
         {
-            "player_name": "J",
-            "role": "SUPPORT"
+            "player_name": "Atila d hun",
+            "preferences": {
+                "top": 10,
+                "jungle": 10,
+                "middle": 3,
+                "bottom": 7,
+                "support": 10
+            },
+            "ratings": {
+                "global": 1500,
+                "top": 600,
+                "jungle": 700,
+                "middle": 900,
+                "bottom": 1000,
+                "support": 2000
+            }
         }
     ]
 }
