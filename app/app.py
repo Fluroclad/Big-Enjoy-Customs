@@ -27,6 +27,7 @@ def addPlayer():
     elif request.method == "POST":
         json_data = {}
         json_data["player_name"] = request.form.get("player_name")
+        json_data["summoner_name"] = request.form.get("summoner_name")
         
         json_data["preferences"] = {}
         json_data["preferences"]["top"]     = request.form.get("top_preference")

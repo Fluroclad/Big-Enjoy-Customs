@@ -9,8 +9,10 @@ CREATE TYPE game_side as ENUM ('BLUE', 'RED');
 /* Create tables */
 DROP TABLE IF EXISTS players CASCADE;
 CREATE TABLE players (
+    riot_player_id VARCHAR(56) NOT NULL,
     player_name VARCHAR(16) UNIQUE NOT NULL,
-    PRIMARY KEY (player_name)
+    PRIMARY KEY (player_name),
+    UNIQUE (riot_player_id)
 );
 
 DROP TABLE IF EXISTS player_ratings CASCADE;
@@ -225,8 +227,9 @@ CREATE OR REPLACE FUNCTION add_player(player JSON)
 RETURNS VOID AS
 $$
 BEGIN
-    INSERT INTO players (player_name)
-    VALUES ((player->>'player_name')::TEXT);
+    INSERT INTO players (player_name, riot_player_id)
+    VALUES ((player->>'player_name')::TEXT,
+            (player->>'riot_account_id')::TEXT);
 
     INSERT INTO player_role_preferences (player_name, "top", jungle, middle, bottom, support)
     VALUES ((player->>'player_name')::TEXT,

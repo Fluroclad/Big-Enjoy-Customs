@@ -120,7 +120,9 @@ def addPlayer(player_data):
         conn = connect(env_variables.DB.name)
         cur = conn.cursor()
 
+        player_data["riot_account_id"] = riotapi.getAccountID(player_data["summoner_name"])
         cur.callproc("add_player", [json.dumps(player_data)])
+        
         return True
     except Exception as e:
         print(e)

@@ -2,6 +2,7 @@
     "players": [
         {
             "player_name": "Drezzak",
+            "riot_account_id": "dWbVBTBUC5pLb0ygyQRt4SuLbsjmtYU3XFcoF2Ad7L2dZQ",
             "preferences": {
                 "top": 7,
                 "jungle": 2,
@@ -20,6 +21,7 @@
         },
         {
             "player_name": "Fluroclad",
+            "riot_account_id": "f0Pd9AliyfGPDzlcThEE5jAGElQLbMNh0r0JRXeaWqhZiw",
             "preferences": {
                 "top": 0,
                 "jungle": 10,
@@ -38,6 +40,7 @@
         },
         {
             "player_name": "Lightcat",
+            "riot_account_id": "lrrwilHQDNKjsxG_4D9tH-F5ubHuPWicQeZ9ziugSRebhQ",
             "preferences": {
                 "top": 4,
                 "jungle": 1,
@@ -56,6 +59,7 @@
         },
         {
             "player_name": "Potshot",
+            "riot_account_id": "c5xJt12OSB2b3hQqYsrrA5ByTRf6Jv3G87KBlWDm4beFb5Q",
             "preferences": {
                 "top": 8,
                 "jungle": 7,
@@ -74,6 +78,7 @@
         },
         {
             "player_name": "World Champ",
+            "riot_account_id": "hHU4toZubmT5TPPD7SnMKy-wvQb_vIi1E2LQyvrkRv_C0g",
             "preferences": {
                 "top": 7,
                 "jungle": 10,
@@ -92,6 +97,7 @@
         },
         {
             "player_name": "NoodIes",
+            "riot_account_id": "i0vV7_XM-BwqtWppB2b5EgKbg7ckcocsOhOp6BawGKn6pQ",
             "preferences": {
                 "top": 4,
                 "jungle": 10,
@@ -110,6 +116,7 @@
         },
         {
             "player_name": "Flaadym",
+            "riot_account_id": "4wrkDdrP9aPnX1y15LvtoD0ZKuxZ_O4dJbXGA8Gtv8dF8w",
             "preferences": {
                 "top": 0,
                 "jungle": 10,
@@ -128,6 +135,7 @@
         },
         {
             "player_name": "evilily",
+            "riot_account_id": "K7k_jNU3GmHyCASIldDXtLoZdJNEsRKX_sjC-iC_H9FU3A",
             "preferences": {
                 "top": 0,
                 "jungle": 10,
@@ -146,6 +154,7 @@
         },
         {
             "player_name": "Taxman Rengar",
+            "riot_account_id": "NqRnat3tcnPG30-cr_k4EyNtNjpb_LhUFrLGUIj4ghFH0A",
             "preferences": {
                 "top": 10,
                 "jungle": 10,
@@ -164,6 +173,7 @@
         },
         {
             "player_name": "Atila d hun",
+            "riot_account_id": "cTox8ERyIA1Q6WsFXjn61dy5aeU2K05eDP-nCeIIubKw7A",
             "preferences": {
                 "top": 10,
                 "jungle": 10,

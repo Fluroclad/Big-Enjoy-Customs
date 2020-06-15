@@ -13,3 +13,10 @@ def getMatch(id):
         data = json.loads(url.read().decode())
     
     return data
+
+def getAccountID(summoner_name):
+    playerAPI = "/lol/summoner/v4/summoners/by-name/" + summoner_name.replace(" ", "+")
+
+    with urllib.request.urlopen(riotAPI + playerAPI + "?api_key=" + env_variables.RiotAPI.token) as url:
+        data = json.loads(url.read().decode())
+    return data["accountId"]
