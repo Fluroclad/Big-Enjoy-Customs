@@ -1,6 +1,26 @@
 import flask
 from flask import request
 import database
+import sys
+import os
+import psycopg2 as pg
+from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
+
+def connect(name):
+    if name:
+        connection = pg.connect(user = os.environ.get('POSTGRES_USER'),
+                                password = os.environ.get('POSTGRES_PASSWORD'),
+                                host = os.environ.get('POSTGRES_HOST'),
+                                port = os.environ.get('POSTGRES_PORT'),
+                                dbname = name)
+    else:
+        connection = pg.connect(user = env_variables.DB.user,
+                                password = env_variables.DB.password,
+                                host = env_variables.DB.host,
+                                port = env_variables.DB.port,
+                                )
+
+    return connection
 
 app = flask.Flask(__name__)
 app.config["DEBUG"] = True
@@ -43,4 +63,4 @@ def addMatch():
     else:
         return flask.Response(status=400)
 
-app.run(host='0.0.0.0', port=81)
+app.run(host='0.0.0.0')
