@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <section class="uk-container-small uk-align-center">
+        <h1>Add Player</h1>
+        <form class="uk-grid-small" action="" method="POST" uk-grid >
+            <div class="uk-width-1-1">
+                <input class="uk-input" type="text" placeholder="Player Name" name="player_name">
+            </div>
+            <div class="uk-width-1-5">
+                <label class="uk-form-label">Top Preference</label>
+                <select class="uk-select" name="top_preference">
+                    {%for i in range(0, 11)%}
+                    <option>{{i}}</option>
+                    {%endfor%}
+                </select>
+            </div>
+            <div class="uk-width-1-5">
+                <label class="uk-form-label">Jungle Preference</label>
+                <select class="uk-select" name="jungle_preference">
+                    {%for i in range(0, 11)%}
+                    <option>{{i}}</option>
+                    {%endfor%}
+                </select>
+            </div>
+            <div class="uk-width-1-5">
+                <label class="uk-form-label">Middle Preference</label>
+                <select class="uk-select" name="middle_preference">
+                    {%for i in range(0, 11)%}
+                    <option>{{i}}</option>
+                    {%endfor%}
+                </select>
+            </div>
+            <div class="uk-width-1-5">
+                <label class="uk-form-label">Bottom Preference</label>
+                <select class="uk-select" name="bottom_preference">
+                    {%for i in range(0, 11)%}
+                    <option>{{i}}</option>
+                    {%endfor%}
+                </select>
+            </div>
+            <div class="uk-width-1-5">
+                <label class="uk-form-label">Support Preference</label>
+                <select class="uk-select" name="support_preference">
+                    {%for i in range(0, 11)%}
+                    <option>{{i}}</option>
+                    {%endfor%}
+                </select>
+            </div>
+            <div class="uk-width-1-1">
+                <button class="uk-button uk-button-default uk-align-right">Add Player!</button>
+            </div>
+        </form>
+    </section>
+{% endblock %}

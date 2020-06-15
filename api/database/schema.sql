@@ -184,20 +184,20 @@ CREATE TABLE game_participants (
 );
 
 /* FUNCTIONS */
-CREATE OR REPLACE FUNCTION add_player(  p_name varchar(16),
-                                        r_pref_top INT,
-                                        r_pref_jungle INT,
-                                        r_pref_middle INT,
-                                        r_pref_bottom INT,
-                                        r_pref_support INT)
+CREATE OR REPLACE FUNCTION add_player(player JSON)
 RETURNS VOID AS
 $$
 BEGIN
     INSERT INTO players (player_name)
-    VALUES (p_name);
+    VALUES ((player->>'player_name')::TEXT);
 
     INSERT INTO player_role_preferences (player_name, "top", jungle, middle, bottom, support)
-    VALUES (p_name, r_pref_top, r_pref_jungle, r_pref_middle, r_pref_bottom, r_pref_support);
+    VALUES ((player->>'player_name')::TEXT,
+            (player#>>'{preferences,top}'::TEXT[])::INT,
+            (player#>>'{preferences,jungle}'::TEXT[])::INT,
+            (player#>>'{preferences,middle}'::TEXT[])::INT,
+            (player#>>'{preferences,bottom}'::TEXT[])::INT,
+            (player#>>'{preferences,support}'::TEXT[])::INT);
 END
 $$
 LANGUAGE 'plpgsql';

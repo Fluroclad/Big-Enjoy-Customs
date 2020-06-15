@@ -1,6 +1,11 @@
-import sys, env_variables
+import sys, json
 import psycopg2 as pg
 from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
+
+import riotapi
+
+# TEMP
+import env_variables
 
 def connect(name):
     if name:
@@ -72,6 +77,45 @@ def install(schema = "database/schema.sql"):
         raise e
 
     return 0
+
+def addPlayer(player_data):
+    try:
+        conn = connect(env_variables.DB.name)
+        cur = conn.cursor()
+
+        cur.callproc("add_player", [json.dumps(player_data)])
+        return True
+    except Exception as e:
+        print(e)
+        conn.rollback()
+        return False
+    finally:
+        if(conn):
+            cur.close()
+            conn.commit()
+            conn.close()
+
+def addMatch(match_data):
+    try:
+        conn = connect(env_variables.DB.name)
+        cur = conn.cursor()
+
+        # Request match data from Riot API
+        riot_data = riotapi.getMatch(match_data["match_id"])
+        
+        # Call pgsql function
+        cur.callproc("add_game", [json.dumps(riot_data),json.dumps(match_data)])
+        return True
+    except Exception as e:
+        print(e)
+        conn.rollback()
+        return False
+    finally:
+        if(conn):
+            cur.close()
+            conn.commit()
+            conn.close()
+        
 
 if __name__ == '__main__':
     globals()[sys.argv[1]]()
