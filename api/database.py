@@ -1,6 +1,7 @@
 import sys, json
 import psycopg2 as pg
 from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
+import psycopg2.extras
 
 import riotapi
 
@@ -81,27 +82,27 @@ def install(schema = "database/schema.sql"):
 def getPlayer(player_name):
     try:
         conn = connect(env_variables.DB.name)
-        cur = conn.cursor()
+        cur = conn.cursor(cursor_factory=pg.extras.DictCursor)
         cur.callproc("get_player",[player_name,])
+        result = cur.fetchone()
         
-        result = cur.fetchall()
         json_data = {}
-        json_data["player_name"] = result[0][0]
+        json_data["player_name"] = result["player_name"]
 
         json_data["preferences"] = {}
-        json_data["preferences"]["top"] = result[0][1]
-        json_data["preferences"]["jungle"] = result[0][2]
-        json_data["preferences"]["middle"] = result[0][3]
-        json_data["preferences"]["bottom"] = result[0][4]
-        json_data["preferences"]["support"] = result[0][5]
+        json_data["preferences"]["top"]     = result["pref_top"]
+        json_data["preferences"]["jungle"]  = result["pref_jungle"]
+        json_data["preferences"]["middle"]  = result["pref_middle"]
+        json_data["preferences"]["bottom"]  = result["pref_bottom"]
+        json_data["preferences"]["support"] = result["pref_support"]
 
         json_data["ratings"] = {}
-        json_data["ratings"]["global"]  = result[0][6]
-        json_data["ratings"]["top"]     = result[0][7]
-        json_data["ratings"]["jungle"]  = result[0][8]
-        json_data["ratings"]["middle"]  = result[0][9]
-        json_data["ratings"]["bottom"]  = result[0][10]
-        json_data["ratings"]["support"] = result[0][11]
+        json_data["ratings"]["global"]  = result["rating_global"]
+        json_data["ratings"]["top"]     = result["rating_top"]
+        json_data["ratings"]["jungle"]  = result["rating_jungle"]
+        json_data["ratings"]["middle"]  = result["rating_middle"]
+        json_data["ratings"]["bottom"]  = result["rating_bottom"]
+        json_data["ratings"]["support"] = result["rating_support"]
 
         return json.dumps(json_data)
     except Exception as e:
