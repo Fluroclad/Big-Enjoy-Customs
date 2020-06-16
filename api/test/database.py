@@ -66,7 +66,7 @@ def db_json_function(id = "4639995139"):
     riotAPI = "https://euw1.api.riotgames.com/"
     matchAPI = "/lol/match/v4/matches/" + str(id)
 
-    r = requests.get(riotAPI + matchAPI + "?api_key=RGAPI-22045ff0-5c9e-442a-9620-2044577fe692")
+    r = requests.get(riotAPI + matchAPI + "?api_key=" + token)
     
     try:
         conn = pg.connect(  user = user,
