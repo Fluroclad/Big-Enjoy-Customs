@@ -55,10 +55,12 @@ def install(schema = "database/schema.sql"):
     except Exception as e:
         raise e
     finally:
-        if conn:
+        if (conn):
             cur.close()
+            conn.commit()
             conn.close()
 
+    # Read Table file
     print("Reading sql schema")
     with open(schema, "r") as f:
         sql = f.read()
@@ -67,17 +69,51 @@ def install(schema = "database/schema.sql"):
         # Connect to database server
         conn = connect(env_variables.DB.name)
  
-        with conn.cursor() as curs:
+        with conn.cursor() as cur:
             print("Running sql schema")
-            curs.execute(sql)
+            cur.execute(sql)
             conn.commit()
             print("Finished running sql schema")
 
     except Exception as e:
         conn.rollback()
         raise e
+    finally:
+        if (conn):
+            cur.close()
+            conn.commit()
+            conn.close()
+
+    # General install functions from sql file
+    reinstallFunctions()
 
     return 0
+
+def reinstallFunctions(functions = "database/functions.sql"):
+    print("Reading functions sql")
+    with open(functions, "r") as f:
+        sql = f.read()
+
+    try:
+        # Connect to database server
+        conn = connect(env_variables.DB.name)
+ 
+        with conn.cursor() as cur:
+            print("Running functions sql")
+            cur.execute(sql)
+            conn.commit()
+            print("Finished running functions sql")
+
+    except Exception as e:
+        conn.rollback()
+        raise e
+    finally:
+        if (conn):
+            cur.close()
+            conn.commit()
+            conn.close()
+
+
 
 def getPlayer(player_name):
     try:
