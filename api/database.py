@@ -155,11 +155,16 @@ def addPlayer(player_data):
     try:
         conn = connect(env_variables.DB.name)
         cur = conn.cursor()
-
-        player_data["riot_account_id"] = riotapi.getAccountID(player_data["summoner_name"])
-        cur.callproc("add_player", [json.dumps(player_data)])
+        result = riotapi.getAccount(player_data["summoner_name"])
         
-        return True
+        if result.status_code == 403 or result.status_code == 404:
+            return False
+        elif result.status_code == 200:
+            # Call pgsql function
+            player_data["riot_account_id"] = result.json()["accountId"]
+            cur.callproc("add_player", [json.dumps(player_data)])
+            return True
+   
     except Exception as e:
         print(e)
         conn.rollback()
@@ -176,11 +181,15 @@ def addMatch(match_data):
         cur = conn.cursor()
 
         # Request match data from Riot API
-        riot_data = riotapi.getMatch(match_data["match_id"])
+        result = riotapi.getMatch(match_data["match_id"])
         
-        # Call pgsql function
-        cur.callproc("add_game", [json.dumps(riot_data),json.dumps(match_data)])
-        return True
+        if result.status_code == 403 or result.status_code == 404:
+            return False
+        elif result.status_code == 200:
+            # Call pgsql function
+            cur.callproc("add_game", [json.dumps(result.json()),json.dumps(match_data)])
+            return True
+    
     except Exception as e:
         print(e)
         conn.rollback()

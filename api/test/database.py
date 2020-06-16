@@ -1,4 +1,4 @@
-import sys, urllib.request, json
+import sys, json, requests
 import psycopg2 as pg
 
 user = "postgres"
@@ -66,8 +66,7 @@ def db_json_function(id = "4639995139"):
     riotAPI = "https://euw1.api.riotgames.com/"
     matchAPI = "/lol/match/v4/matches/" + str(id)
 
-    with urllib.request.urlopen(riotAPI + matchAPI + "?api_key=" + token) as url:
-        data = json.loads(url.read().decode())
+    r = requests.get(riotAPI + matchAPI + "?api_key=RGAPI-22045ff0-5c9e-442a-9620-2044577fe692")
     
     try:
         conn = pg.connect(  user = user,
@@ -81,7 +80,7 @@ def db_json_function(id = "4639995139"):
         f = open("players.json", "r")
         players_list = f.read()
 
-        cur.callproc("add_game", [json.dumps(data),players_list])
+        cur.callproc("add_game", [json.dumps(r.json()),players_list])
     
     except(Exception, pg.Error) as error:
         print(error)

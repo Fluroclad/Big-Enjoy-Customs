@@ -1,4 +1,4 @@
-import urllib.request, json
+import requests, json
 
 # TEMP
 import env_variables
@@ -6,17 +6,20 @@ import env_variables
 
 riotAPI = "https://euw1.api.riotgames.com/"
 
-def getMatch(id):
+def getMatch(id = "4639995139"):
     matchAPI = "/lol/match/v4/matches/" + str(id)
+    r = requests.get(riotAPI + matchAPI, headers = riotApiHeader())
 
-    with urllib.request.urlopen(riotAPI + matchAPI + "?api_key=" + env_variables.RiotAPI.token) as url:
-        data = json.loads(url.read().decode())
-    
-    return data
+    return r
 
-def getAccountID(summoner_name):
+def getAccount(summoner_name = "Fluroclad"):
     playerAPI = "/lol/summoner/v4/summoners/by-name/" + summoner_name.replace(" ", "+")
+    r = requests.get(riotAPI + playerAPI, headers = riotApiHeader())
 
-    with urllib.request.urlopen(riotAPI + playerAPI + "?api_key=" + env_variables.RiotAPI.token) as url:
-        data = json.loads(url.read().decode())
-    return data["accountId"]
+    return r
+
+def riotApiHeader():
+    headers = {}
+    headers["X-Riot-Token"] = env_variables.RiotAPI.token
+
+    return headers

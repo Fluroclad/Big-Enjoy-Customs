@@ -1,7 +1,6 @@
-import flask, urllib.request, json
+import flask, json, requests
 from flask import render_template
 from flask import request
-import requests
 
 # TEMP
 import env_variables
@@ -15,10 +14,12 @@ def home():
 
 @app.route("/player/<name>", methods=["GET"])
 def getPlayer(name):
-    with urllib.request.urlopen(env_variables.apiURL + "/player/"+name) as url:
-        data = json.loads(url.read().decode())
-    
-    return data
+    r = requests.get(env_variables.apiURL + "/player/" + name)
+
+    if r.status_code == 200:
+        return render_template("test-json.html", data = r.json())
+    elif r.status_code == 404:
+        return render_template("test-json.html", data = r)
 
 @app.route("/add-player", methods=["GET","POST"])
 def addPlayer():
