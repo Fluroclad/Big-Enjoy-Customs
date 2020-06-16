@@ -652,8 +652,8 @@ BEGIN
     SELECT side(riot, 'firstRiftHerald') INTO m_herald;
 
     /* Insert initial game */
-    INSERT INTO games (riot_game_id, game_duration, game_version, winner, first_tower, first_inhibitor, first_dragon, first_baron, first_rift_herald)
-    VALUES ((riot->>'gameId')::BIGINT, (riot->>'gameDuration')::INT, riot->>'gameVersion', m_winner, m_tower, m_inhibitor, m_dragon, m_baron, m_herald);
+    INSERT INTO games (riot_game_id, game_duration, game_version, game_date, winner, first_tower, first_inhibitor, first_dragon, first_baron, first_rift_herald)
+    VALUES ((riot->>'gameId')::BIGINT, (riot->>'gameDuration')::INT, riot->>'gameVersion', (riot->>'gameCreation')::BIGINT, m_winner, m_tower, m_inhibitor, m_dragon, m_baron, m_herald);
 
     /* Insert game team stats */
     EXECUTE add_game_team_stats(riot);

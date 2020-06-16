@@ -50,6 +50,7 @@ CREATE TABLE games (
     riot_game_id BIGINT NOT NULL,
     game_duration INT NOT NULL,
     game_version VARCHAR(50) NOT NULL,
+    game_date BIGINT NOT NULL,
     winner game_side NOT NULL,
     first_tower game_side NOT NULL,
     first_inhibitor game_side NOT NULL,
@@ -182,5 +183,5 @@ CREATE TABLE game_participants (
     FOREIGN KEY (game_id) REFERENCES games (riot_game_id),
     FOREIGN KEY (player_name) REFERENCES players (player_name) ON UPDATE CASCADE,
     UNIQUE (game_id, player_name), /* One player per game id */
-    UNIQUE ("role", side) /* Ensures 1 role per side to make sure 10 players per game id */
+    UNIQUE (game_id, "role", side) /* Ensures 1 role per side to make sure 10 players per game id */
 );
