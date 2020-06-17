@@ -45,7 +45,7 @@ def addPlayer():
         json_data["ratings"]["bottom"]  = 1400
         json_data["ratings"]["support"] = 1500
 
-        requests.post(env_variables.apiURL + "/player/add", json = json_data)
+        requests.post(env_variables.apiURL + "/player", json = json_data)
         return render_template("test-json.html", data = json_data)
 
 @app.route("/add-match", methods=["GET","POST"])
@@ -69,7 +69,7 @@ def addMatch():
 
         json_data["players"] = players
 
-        requests.post(env_variables.apiURL + "/match/add", json = json_data)
+        requests.post(env_variables.apiURL + "/match", json = json_data)
         return render_template("test-json.html", data = json_data)
 
 app.run(host="0.0.0.0", port=80)
