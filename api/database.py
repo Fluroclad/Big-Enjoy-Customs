@@ -113,8 +113,6 @@ def reinstallFunctions(functions = "database/functions.sql"):
             conn.commit()
             conn.close()
 
-
-
 def getPlayer(player_name):
     try:
         conn = connect(env_variables.DB.name)
@@ -157,13 +155,13 @@ def addPlayer(player_data):
         cur = conn.cursor()
         result = riotapi.getAccount(player_data["summoner_name"])
         
-        if result.status_code == 403 or result.status_code == 404:
-            return False
-        elif result.status_code == 200:
+        if result.status_code == 200:
             # Call pgsql function
             player_data["riot_account_id"] = result.json()["accountId"]
             cur.callproc("add_player", [json.dumps(player_data)])
-            return True
+            return result.status_code
+        else:
+            return result.status_code
    
     except Exception as e:
         print(e)

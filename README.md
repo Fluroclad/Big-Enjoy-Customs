@@ -8,5 +8,5 @@ python database.py install
 ```
 
 # Dependencies 
-* Python 3.8.3 (Flask, psycopg2, requests)
+* Python 3.8.3 (Flask, psycopg2, requests, pydantic)
 * PostgreSQL 12.3
